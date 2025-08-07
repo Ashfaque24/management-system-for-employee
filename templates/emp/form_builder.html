@@ -1,0 +1,677 @@
+{% extends 'emp/base.html' %}
+
+{% block title %}Form Builder - Employee Management System{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                <i class="fas fa-edit"></i> Form Builder
+            </h1>
+            <p class="text-muted">Create custom forms for employee data collection</p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-success" id="saveFormBtn">
+                <i class="fas fa-save"></i> Save Form
+            </button>
+            <a href="{% url 'form_templates' %}" class="btn btn-outline-primary">
+                <i class="fas fa-list"></i> View Templates
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Form Builder Tools -->
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tools"></i> Form Tools
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="formName" class="form-label">Form Name</label>
+                        <input type="text" class="form-control" id="formName" placeholder="Enter form name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="formDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="formDescription" rows="3" placeholder="Enter form description"></textarea>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6 class="mb-3">Available Fields</h6>
+                    <div class="field-toolbox">
+                        <div class="field-item" data-type="text">
+                            <i class="fas fa-font"></i> Text Input
+                        </div>
+                        <div class="field-item" data-type="number">
+                            <i class="fas fa-hashtag"></i> Number Input
+                        </div>
+                        <div class="field-item" data-type="email">
+                            <i class="fas fa-envelope"></i> Email Input
+                        </div>
+                        <div class="field-item" data-type="date">
+                            <i class="fas fa-calendar"></i> Date Input
+                        </div>
+                        <div class="field-item" data-type="password">
+                            <i class="fas fa-lock"></i> Password Input
+                        </div>
+                        <div class="field-item" data-type="textarea">
+                            <i class="fas fa-align-left"></i> Text Area
+                        </div>
+                        <div class="field-item" data-type="select">
+                            <i class="fas fa-list"></i> Select Dropdown
+                        </div>
+                        <div class="field-item" data-type="checkbox">
+                            <i class="fas fa-check-square"></i> Checkbox
+                        </div>
+                        <div class="field-item" data-type="radio">
+                            <i class="fas fa-dot-circle"></i> Radio Buttons
+                        </div>
+                        <div class="field-item" data-type="file">
+                            <i class="fas fa-file-upload"></i> File Upload
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form Canvas -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-palette"></i> Form Canvas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="formCanvas" class="form-canvas">
+                        <div class="empty-state" id="emptyState">
+                            <i class="fas fa-mouse-pointer fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Drag fields from the toolbox to start building your form</h5>
+                            <p class="text-muted">Click on any field to edit its properties</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Field Properties Modal -->
+    <div class="modal fade" id="fieldPropertiesModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-cog"></i> Field Properties
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="fieldPropertiesForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="fieldLabel" class="form-label">Field Label</label>
+                                    <input type="text" class="form-control" id="fieldLabel" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="fieldType" class="form-label">Field Type</label>
+                                    <select class="form-control" id="fieldType" disabled>
+                                        <option value="text">Text Input</option>
+                                        <option value="number">Number Input</option>
+                                        <option value="email">Email Input</option>
+                                        <option value="date">Date Input</option>
+                                        <option value="password">Password Input</option>
+                                        <option value="textarea">Text Area</option>
+                                        <option value="select">Select Dropdown</option>
+                                        <option value="checkbox">Checkbox</option>
+                                        <option value="radio">Radio Buttons</option>
+                                        <option value="file">File Upload</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="fieldPlaceholder" class="form-label">Placeholder</label>
+                                    <input type="text" class="form-control" id="fieldPlaceholder">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="fieldRequired">
+                                        <label class="form-check-label" for="fieldRequired">
+                                            Required Field
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="mb-3" id="optionsContainer" style="display: none;">
+                                    <label for="fieldOptions" class="form-label">Options (one per line)</label>
+                                    <textarea class="form-control" id="fieldOptions" rows="4" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="fieldValidation" class="form-label">Validation Rules</label>
+                                    <select class="form-control" id="fieldValidation">
+                                        <option value="">None</option>
+                                        <option value="email">Email Format</option>
+                                        <option value="phone">Phone Number</option>
+                                        <option value="url">URL Format</option>
+                                        <option value="min_length">Minimum Length</option>
+                                        <option value="max_length">Maximum Length</option>
+                                        <option value="numeric">Numeric Only</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="deleteFieldBtn">Delete Field</button>
+                    <button type="button" class="btn btn-primary" id="saveFieldBtn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.field-toolbox {
+    display: grid;
+    gap: 10px;
+}
+
+.field-item {
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    cursor: grab;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-weight: 500;
+}
+
+.field-item:hover {
+    border-color: var(--secondary-color);
+    background: #e3f2fd;
+    transform: translateY(-2px);
+}
+
+.field-item:active {
+    cursor: grabbing;
+}
+
+.field-item i {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: var(--secondary-color);
+}
+
+.form-canvas {
+    min-height: 400px;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    padding: 20px;
+    background: #fafafa;
+}
+
+.form-canvas.drag-over {
+    border-color: var(--secondary-color);
+    background: #e3f2fd;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.form-field {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.form-field:hover {
+    border-color: var(--secondary-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.form-field.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25);
+}
+
+.form-field .field-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form-field .field-label {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.form-field .field-type {
+    font-size: 0.8rem;
+    color: #6c757d;
+    background: #f8f9fa;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.form-field .field-preview {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    padding: 10px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.form-field .field-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: none;
+}
+
+.form-field:hover .field-actions {
+    display: block;
+}
+
+.form-field .field-actions .btn {
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    margin-left: 5px;
+}
+
+.sortable-ghost {
+    opacity: 0.5;
+    background: #e3f2fd;
+}
+
+.sortable-chosen {
+    transform: rotate(2deg);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+class FormBuilder {
+    constructor() {
+        this.fields = [];
+        this.selectedField = null;
+        this.fieldCounter = 0;
+        this.init();
+    }
+
+    init() {
+        this.initDragAndDrop();
+        this.initEventListeners();
+        this.initSortable();
+    }
+
+    initDragAndDrop() {
+        // Make field items draggable
+        document.querySelectorAll('.field-item').forEach(item => {
+            item.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', item.dataset.type);
+                item.style.opacity = '0.5';
+            });
+
+            item.addEventListener('dragend', (e) => {
+                item.style.opacity = '1';
+            });
+        });
+
+        // Form canvas drop zone
+        const canvas = document.getElementById('formCanvas');
+        
+        canvas.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            canvas.classList.add('drag-over');
+        });
+
+        canvas.addEventListener('dragleave', (e) => {
+            canvas.classList.remove('drag-over');
+        });
+
+        canvas.addEventListener('drop', (e) => {
+            e.preventDefault();
+            canvas.classList.remove('drag-over');
+            
+            const fieldType = e.dataTransfer.getData('text/plain');
+            this.addField(fieldType);
+        });
+    }
+
+    initEventListeners() {
+        // Save form button
+        document.getElementById('saveFormBtn').addEventListener('click', () => {
+            this.saveForm();
+        });
+
+        // Field properties modal
+        document.getElementById('saveFieldBtn').addEventListener('click', () => {
+            this.saveFieldProperties();
+        });
+
+        document.getElementById('deleteFieldBtn').addEventListener('click', () => {
+            this.deleteSelectedField();
+        });
+
+        // Field type change
+        document.getElementById('fieldType').addEventListener('change', (e) => {
+            this.toggleOptionsContainer(e.target.value);
+        });
+    }
+
+    initSortable() {
+        const canvas = document.getElementById('formCanvas');
+        new Sortable(canvas, {
+            group: 'form-fields',
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            onEnd: (evt) => {
+                this.updateFieldOrder();
+            }
+        });
+    }
+
+    addField(type) {
+        this.fieldCounter++;
+        const fieldId = `field_${this.fieldCounter}`;
+        
+        const field = {
+            id: fieldId,
+            type: type,
+            label: `${type.charAt(0).toUpperCase() + type.slice(1)} Field`,
+            placeholder: '',
+            required: false,
+            options: [],
+            validation: ''
+        };
+
+        this.fields.push(field);
+        this.renderField(field);
+        this.hideEmptyState();
+    }
+
+    renderField(field) {
+        const fieldElement = document.createElement('div');
+        fieldElement.className = 'form-field';
+        fieldElement.dataset.fieldId = field.id;
+        
+        const typeLabels = {
+            text: 'Text Input',
+            number: 'Number Input',
+            email: 'Email Input',
+            date: 'Date Input',
+            password: 'Password Input',
+            textarea: 'Text Area',
+            select: 'Select Dropdown',
+            checkbox: 'Checkbox',
+            radio: 'Radio Buttons',
+            file: 'File Upload'
+        };
+
+        fieldElement.innerHTML = `
+            <div class="field-header">
+                <h6 class="field-label">${field.label}</h6>
+                <span class="field-type">${typeLabels[field.type]}</span>
+            </div>
+            <div class="field-preview">
+                ${this.getFieldPreview(field)}
+            </div>
+            <div class="field-actions">
+                <button class="btn btn-sm btn-outline-primary edit-field">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger delete-field">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+
+        // Add event listeners
+        fieldElement.addEventListener('click', (e) => {
+            if (!e.target.closest('.field-actions')) {
+                this.selectField(field.id);
+            }
+        });
+
+        fieldElement.querySelector('.edit-field').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.editField(field.id);
+        });
+
+        fieldElement.querySelector('.delete-field').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.deleteField(field.id);
+        });
+
+        document.getElementById('formCanvas').appendChild(fieldElement);
+    }
+
+    getFieldPreview(field) {
+        switch (field.type) {
+            case 'text':
+            case 'email':
+            case 'password':
+                return `<input type="${field.type}" placeholder="${field.placeholder || 'Enter ' + field.label.toLowerCase()}" class="form-control" disabled>`;
+            case 'number':
+                return `<input type="number" placeholder="${field.placeholder || 'Enter number'}" class="form-control" disabled>`;
+            case 'date':
+                return `<input type="date" class="form-control" disabled>`;
+            case 'textarea':
+                return `<textarea placeholder="${field.placeholder || 'Enter ' + field.label.toLowerCase()}" class="form-control" rows="3" disabled></textarea>`;
+            case 'select':
+                const options = field.options.length > 0 ? field.options.map(opt => `<option>${opt}</option>`).join('') : '<option>Select an option</option>';
+                return `<select class="form-control" disabled>${options}</select>`;
+            case 'checkbox':
+                return `<div class="form-check"><input type="checkbox" class="form-check-input" disabled><label class="form-check-label">${field.label}</label></div>`;
+            case 'radio':
+                return `<div class="form-check"><input type="radio" class="form-check-input" disabled><label class="form-check-label">${field.label}</label></div>`;
+            case 'file':
+                return `<input type="file" class="form-control" disabled>`;
+            default:
+                return `<input type="text" placeholder="Field preview" class="form-control" disabled>`;
+        }
+    }
+
+    selectField(fieldId) {
+        // Remove previous selection
+        document.querySelectorAll('.form-field').forEach(field => {
+            field.classList.remove('selected');
+        });
+
+        // Add selection to current field
+        const fieldElement = document.querySelector(`[data-field-id="${fieldId}"]`);
+        if (fieldElement) {
+            fieldElement.classList.add('selected');
+            this.selectedField = this.fields.find(f => f.id === fieldId);
+        }
+    }
+
+    editField(fieldId) {
+        const field = this.fields.find(f => f.id === fieldId);
+        if (!field) return;
+
+        this.selectedField = field;
+        this.populateFieldProperties(field);
+        
+        const modal = new bootstrap.Modal(document.getElementById('fieldPropertiesModal'));
+        modal.show();
+    }
+
+    populateFieldProperties(field) {
+        document.getElementById('fieldLabel').value = field.label;
+        document.getElementById('fieldType').value = field.type;
+        document.getElementById('fieldPlaceholder').value = field.placeholder;
+        document.getElementById('fieldRequired').checked = field.required;
+        document.getElementById('fieldOptions').value = field.options.join('\n');
+        document.getElementById('fieldValidation').value = field.validation;
+        
+        this.toggleOptionsContainer(field.type);
+    }
+
+    toggleOptionsContainer(fieldType) {
+        const container = document.getElementById('optionsContainer');
+        if (['select', 'radio'].includes(fieldType)) {
+            container.style.display = 'block';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    saveFieldProperties() {
+        if (!this.selectedField) return;
+
+        const field = this.selectedField;
+        field.label = document.getElementById('fieldLabel').value;
+        field.placeholder = document.getElementById('fieldPlaceholder').value;
+        field.required = document.getElementById('fieldRequired').checked;
+        field.options = document.getElementById('fieldOptions').value.split('\n').filter(opt => opt.trim());
+        field.validation = document.getElementById('fieldValidation').value;
+
+        this.updateFieldDisplay(field);
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('fieldPropertiesModal'));
+        modal.hide();
+    }
+
+    updateFieldDisplay(field) {
+        const fieldElement = document.querySelector(`[data-field-id="${field.id}"]`);
+        if (fieldElement) {
+            fieldElement.querySelector('.field-label').textContent = field.label;
+            fieldElement.querySelector('.field-preview').innerHTML = this.getFieldPreview(field);
+        }
+    }
+
+    deleteField(fieldId) {
+        const fieldElement = document.querySelector(`[data-field-id="${fieldId}"]`);
+        if (fieldElement) {
+            fieldElement.remove();
+        }
+        
+        this.fields = this.fields.filter(f => f.id !== fieldId);
+        
+        if (this.fields.length === 0) {
+            this.showEmptyState();
+        }
+    }
+
+    deleteSelectedField() {
+        if (this.selectedField) {
+            this.deleteField(this.selectedField.id);
+            this.selectedField = null;
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('fieldPropertiesModal'));
+            modal.hide();
+        }
+    }
+
+    updateFieldOrder() {
+        const fieldElements = document.querySelectorAll('.form-field');
+        const newOrder = [];
+        
+        fieldElements.forEach(element => {
+            const fieldId = element.dataset.fieldId;
+            const field = this.fields.find(f => f.id === fieldId);
+            if (field) {
+                newOrder.push(field);
+            }
+        });
+        
+        this.fields = newOrder;
+    }
+
+    hideEmptyState() {
+        const emptyState = document.getElementById('emptyState');
+        if (emptyState) {
+            emptyState.style.display = 'none';
+        }
+    }
+
+    showEmptyState() {
+        const emptyState = document.getElementById('emptyState');
+        if (emptyState) {
+            emptyState.style.display = 'block';
+        }
+    }
+
+    async saveForm() {
+        const formName = document.getElementById('formName').value.trim();
+        const formDescription = document.getElementById('formDescription').value.trim();
+
+        if (!formName) {
+            Utils.showAlert('Please enter a form name', 'warning');
+            return;
+        }
+
+        if (this.fields.length === 0) {
+            Utils.showAlert('Please add at least one field to the form', 'warning');
+            return;
+        }
+
+        const formData = {
+            name: formName,
+            description: formDescription,
+            is_active: true,
+            fields: this.fields.map(field => ({
+                label: field.label,
+                field_type: field.type,
+                required: field.required,
+                placeholder: field.placeholder,
+                options: field.options,
+                order: this.fields.indexOf(field),
+                validation_rules: field.validation ? { rule: field.validation } : null
+            }))
+        };
+
+        try {
+            Utils.showLoading(document.body);
+            
+            const response = await axios.post('{% url "form_builder" %}', formData);
+            
+            if (response.data.success) {
+                Utils.showAlert('Form saved successfully!', 'success');
+                setTimeout(() => {
+                    window.location.href = '{% url "form_templates" %}';
+                }, 1500);
+            } else {
+                Utils.showAlert('Error saving form', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving form:', error);
+            Utils.showAlert('Error saving form. Please try again.', 'error');
+        } finally {
+            Utils.hideLoading(document.body);
+        }
+    }
+}
+
+// Initialize form builder when document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    new FormBuilder();
+});
+</script>
+{% endblock %}

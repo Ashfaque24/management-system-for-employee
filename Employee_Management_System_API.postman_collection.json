@@ -1,0 +1,545 @@
+{
+	"info": {
+		"_postman_id": "employee-management-system-api",
+		"name": "Employee Management System API",
+		"description": "Complete REST API collection for Employee Management System with JWT authentication, form management, and employee CRUD operations.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12345678"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "User Registration",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"testpass123\",\n    \"password2\": \"testpass123\",\n    \"first_name\": \"Test\",\n    \"last_name\": \"User\",\n    \"phone_number\": \"+1234567890\",\n    \"address\": \"123 Test Street\",\n    \"date_of_birth\": \"1990-01-01\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "register", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"testpass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "login", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"old_password\": \"testpass123\",\n    \"new_password\": \"newpass123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/change-password/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "change-password", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"Updated\",\n    \"last_name\": \"Name\",\n    \"email\": \"updated@example.com\",\n    \"phone_number\": \"+1987654321\",\n    \"address\": \"456 Updated Street\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/profile/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "profile", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Form Templates",
+			"item": [
+				{
+					"name": "Get All Form Templates",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/forms/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "forms", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Form Template",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Employee Onboarding Form\",\n    \"description\": \"Form for new employee onboarding process\",\n    \"is_active\": true,\n    \"fields\": [\n        {\n            \"label\": \"Full Name\",\n            \"field_type\": \"text\",\n            \"required\": true,\n            \"placeholder\": \"Enter full name\",\n            \"order\": 0\n        },\n        {\n            \"label\": \"Email Address\",\n            \"field_type\": \"email\",\n            \"required\": true,\n            \"placeholder\": \"Enter email address\",\n            \"order\": 1\n        },\n        {\n            \"label\": \"Phone Number\",\n            \"field_type\": \"text\",\n            \"required\": true,\n            \"placeholder\": \"Enter phone number\",\n            \"order\": 2\n        },\n        {\n            \"label\": \"Department\",\n            \"field_type\": \"select\",\n            \"required\": true,\n            \"options\": [\"IT\", \"HR\", \"Marketing\", \"Sales\", \"Finance\"],\n            \"order\": 3\n        },\n        {\n            \"label\": \"Start Date\",\n            \"field_type\": \"date\",\n            \"required\": true,\n            \"order\": 4\n        },\n        {\n            \"label\": \"Additional Notes\",\n            \"field_type\": \"textarea\",\n            \"required\": false,\n            \"placeholder\": \"Any additional information\",\n            \"order\": 5\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/forms/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "forms", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Form Template by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/forms/{{form_template_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "forms", "{{form_template_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Form Template",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Updated Employee Onboarding Form\",\n    \"description\": \"Updated form for new employee onboarding process\",\n    \"is_active\": true,\n    \"fields\": [\n        {\n            \"label\": \"Full Name\",\n            \"field_type\": \"text\",\n            \"required\": true,\n            \"placeholder\": \"Enter full name\",\n            \"order\": 0\n        },\n        {\n            \"label\": \"Email Address\",\n            \"field_type\": \"email\",\n            \"required\": true,\n            \"placeholder\": \"Enter email address\",\n            \"order\": 1\n        },\n        {\n            \"label\": \"Phone Number\",\n            \"field_type\": \"text\",\n            \"required\": true,\n            \"placeholder\": \"Enter phone number\",\n            \"order\": 2\n        },\n        {\n            \"label\": \"Department\",\n            \"field_type\": \"select\",\n            \"required\": true,\n            \"options\": [\"IT\", \"HR\", \"Marketing\", \"Sales\", \"Finance\", \"Operations\"],\n            \"order\": 3\n        },\n        {\n            \"label\": \"Start Date\",\n            \"field_type\": \"date\",\n            \"required\": true,\n            \"order\": 4\n        },\n        {\n            \"label\": \"Salary\",\n            \"field_type\": \"number\",\n            \"required\": true,\n            \"placeholder\": \"Enter salary amount\",\n            \"order\": 5\n        },\n        {\n            \"label\": \"Additional Notes\",\n            \"field_type\": \"textarea\",\n            \"required\": false,\n            \"placeholder\": \"Any additional information\",\n            \"order\": 6\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/forms/{{form_template_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "forms", "{{form_template_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Form Template",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/forms/{{form_template_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "forms", "{{form_template_id}}", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employees",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Employees with Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/?department=IT&status=active&search=john&ordering=-created_at",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", ""],
+							"query": [
+								{
+									"key": "department",
+									"value": "IT"
+								},
+								{
+									"key": "status",
+									"value": "active"
+								},
+								{
+									"key": "search",
+									"value": "john"
+								},
+								{
+									"key": "ordering",
+									"value": "-created_at"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Employee",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee_id\": \"EMP001\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"email\": \"john.doe@example.com\",\n    \"phone\": \"+1234567890\",\n    \"date_of_birth\": \"1990-05-15\",\n    \"hire_date\": \"2023-01-15\",\n    \"department\": \"IT\",\n    \"position\": \"Software Developer\",\n    \"salary\": \"75000.00\",\n    \"status\": \"active\",\n    \"address_line1\": \"123 Main Street\",\n    \"address_line2\": \"Apt 4B\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"postal_code\": \"10001\",\n    \"country\": \"United States\",\n    \"emergency_contact_name\": \"Jane Doe\",\n    \"emergency_contact_phone\": \"+1987654321\",\n    \"emergency_contact_relationship\": \"Spouse\",\n    \"custom_fields\": {\n        \"skills\": \"Python, Django, JavaScript\",\n        \"certifications\": \"AWS Certified Developer\",\n        \"languages\": \"English, Spanish\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"employee_id\": \"EMP001\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Smith\",\n    \"email\": \"john.smith@example.com\",\n    \"phone\": \"+1234567890\",\n    \"date_of_birth\": \"1990-05-15\",\n    \"hire_date\": \"2023-01-15\",\n    \"department\": \"IT\",\n    \"position\": \"Senior Software Developer\",\n    \"salary\": \"85000.00\",\n    \"status\": \"active\",\n    \"address_line1\": \"456 Oak Avenue\",\n    \"address_line2\": \"Suite 200\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"postal_code\": \"10002\",\n    \"country\": \"United States\",\n    \"emergency_contact_name\": \"Jane Smith\",\n    \"emergency_contact_phone\": \"+1987654321\",\n    \"emergency_contact_relationship\": \"Spouse\",\n    \"custom_fields\": {\n        \"skills\": \"Python, Django, JavaScript, React\",\n        \"certifications\": \"AWS Certified Developer, Google Cloud Certified\",\n        \"languages\": \"English, Spanish, French\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Employee",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Advanced Employee Search",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"search\": \"john\",\n    \"department\": \"IT\",\n    \"status\": \"active\",\n    \"hire_date_from\": \"2023-01-01\",\n    \"hire_date_to\": \"2023-12-31\",\n    \"custom_field_name\": \"skills\",\n    \"custom_field_value\": \"Python\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees/search/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "search", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employee Documents",
+			"item": [
+				{
+					"name": "Get Employee Documents",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/documents/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", "documents", ""]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Employee Document",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document_type",
+									"value": "contract",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "Employment Contract",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Signed employment contract for John Doe",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/documents/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", "documents", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Employee History",
+			"item": [
+				{
+					"name": "Get Employee History",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/employees/{{employee_id}}/history/",
+							"host": ["{{base_url}}"],
+							"path": ["api", "employees", "{{employee_id}}", "history", ""]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "your_access_token_here",
+			"type": "string"
+		},
+		{
+			"key": "employee_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "form_template_id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}
